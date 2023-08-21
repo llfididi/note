@@ -1,0 +1,57 @@
+<style>
+
+  #canvas {
+    border: solid 1px #999;
+  }
+  #color {
+    width: 100px;
+    height: 100px;
+  }
+  body{
+    margin:0;
+  }
+</style>
+
+<canvas id="canvas" width="500" height="300"></canvas>
+<div id="color"></div>
+<div id="text"></div>
+
+<script>
+  var canvas = document.getElementById("canvas");
+  canvas.addEventListener("mousemove", pickPixels);
+  var ctx = canvas.getContext("2d", { willReadFrequently: true });
+
+  var img = new Image();
+  // var img = document.createElement("img");
+  var url =
+    "https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/09a461b5f9804218b698da70ca90be1f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?";
+  img.src = url + "?" + new Date().getTime();
+  // 防止报跨域的错 Failed to execute 'getImageData' on 'CanvasRenderingContext2D': The canvas has been tainted by cross-origin data
+  img.setAttribute("crossOrigin", "");
+  img.onload = function () {
+    ctx.drawImage(img, -100, -50);
+    img.style.display = "none";
+  };
+
+  var color = document.getElementById("color");
+
+  function pickPixels(event) {
+    var x = event.layerX;
+    var y = event.layerY;
+    var pixel = ctx.getImageData(x, y, 1, 1);
+    var data = pixel.data;
+    var rgba =
+      "rgba(" +
+      data[0] +
+      "," +
+      data[1] +
+      "," +
+      data[2] +
+      "," +
+      data[3] / 255 +
+      ")";
+    color.style.background = rgba;
+    var textDom = document.getElementById("text");
+    textDom.textContent = `色值：` + rgba;
+  }
+</script>

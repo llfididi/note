@@ -1,0 +1,50 @@
+<button id="but">2</button>
+<script>
+  function Throttle(
+    func,
+    wait = 1000,
+    options = {
+      leading: true,
+      trailing: true,
+    }
+  ) {
+    let timeout
+    let previous = 0;
+    console.log(this);
+
+    const later = (yu, canshu) => {
+      previous = options.leading === false ? 0 : new Date().getTime();
+      timeout = null;
+      func.apply(yu, canshu);
+    };
+
+    const throttled = function () {
+      console.log(this, "123");
+      const now = new Date().getTime();
+      //首次触发 options.leading 为false，由于时间戳，会触发不了
+      if (!previous && options.leading === false) previous = now;
+      // 剩余的时间
+      const remaining = wait - (now - previous);
+      if (remaining <= 0 || remaining > wait) {
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = null;
+        }
+        previous = now;
+        func.call(this, ...arguments);
+        return;
+      }
+      if (!timeout && options.trailing !== false) {
+        timeout = setTimeout(() => later(this, arguments), remaining);
+      }
+    };
+    return throttled;
+  }
+  let a = 0;
+  const add = function () {
+    a++;
+    console.log(this, a);
+  };
+  const fun = new Throttle(add);
+  document.getElementById("but").addEventListener("click", fun);
+</script>
