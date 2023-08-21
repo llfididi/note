@@ -1,0 +1,13 @@
+Number.prototype[Symbol.iterator] = function*() {
+ let i = 0;
+ let num = this.valueOf();
+ while (i < num) {
+   yield i++;
+ }
+}
+
+
+
+  const arrs = [...Array(5).keys()]
+
+

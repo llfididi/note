@@ -1,0 +1,15 @@
+var bindEvent = function(dom, eventName, listener){
+  if(dom.attachEvent) {
+    dom.attachEvent('on'+eventName, listener);
+  } else {
+    dom.addEventListener(eventName, listener);
+  }
+}
+var mydiv = document.getElementById('testcolor');
+bindEvent(mydiv, 'click', function(e){
+  console.log(e);
+  var {width} = mydiv.getBoundingClientRect()
+  var offsetX = e.offsetX/width*100;
+  var offsetY = e.offsetY/width*100;
+  console.log(offsetX, offsetY);
+})
