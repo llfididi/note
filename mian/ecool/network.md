@@ -127,9 +127,65 @@ Domain Name System
 比如我们如果想要查询 www.baidu.com 的 IP 地址，我们首先会在浏览器的缓存中查找是否有该域名的缓存，如果不存在就将请求发送到本地的 DNS 服务器中，本地DNS服务器会判断是否存在该域名的缓存，如果不存在，则向根域名服务器发送一个请求，根域名服务器返回负责 .com 的顶级域名服务器的 IP 地址的列表。然后本地 DNS 服务器再向其中一个负责 .com 的顶级域名服务器发送一个请求，负责 .com 的顶级域名服务器返回负责 .baidu 的权威域名服务器的 IP 地址列表。然后本地 DNS 服务器再向其中一个权威域名服务器发送一个请求，最后权威域名服务器返回一个对应的主机名的 IP 地址列表。
 
 ## get和post请求的区别
-参数类型：post 的参数传递支持更多的数据类型。
+
+应用场景：一般get请求用于对服务器资源不会产生影响的场景，比如请求一个网页。post一般用于注册用户这一类的操作。
+参数类型：get只接受ascii字符。post 的参数传递支持更多的数据类型，放在请求正文里（body）。
 发送的报文格式：Get 请求的报文中实体部分为空，Post 请求的报文中实体部分一般为向服务器发送的数据。
 请求长度：浏览器由于对 url 有一个长度上的限制，所以会影响 get 请求发送数据时的长度。这个限制是浏览器规定的，并不是 RFC 规定的。
-是否缓存：因为不同的应用场景，所以浏览器一般会对 Get 请求缓存，但很少对 Post 请求缓存。
+是否缓存：因为不同的应用场景，所以浏览器一般会对 Get 请求缓存，但很少对 Post 请求缓存。get被浏览器主动cache，post要手动设置，Cache-Control: max-age=3600
+安全性：GET参数通过URL传递，POST放在Request body中
 
-## 
+只是后天的人为规定造成了它们之间的不同和缺陷
+
+get是幂等：在编程中一个幂等操作的特点是其任意多次执行所产生的影响均与一次执行的影响相同
+
+## http和https
+
+HTTPS是在HTTP的基础上加入了SSL协议，SSL依靠证书来验证服务器的身份，并为浏览器和服务器之间的通信加密（在传输层）
+HTTP + 加密 + 认证 + 完整性保护 = HTTPS
+
+https具有安全性的ssl加密
+
+HTTP是直接与TCP进行数据传输；
+HTTPS运行在SSL/TLS(安全传输层协议)之上，SSL/TLS运行在TCP之上，用的端口也不一样，前者是80（需要国内备案），后者是443
+
+HTTP的连接很简单，是无状态的；
+HTTPS协议是由SSL+HTTP协议构建的，可进行加密传输、身份认证的网络协议，比HTTP协议安全
+
+## http request & response header 
+
+请求和响应报文都会使用的首部
+- Cache-Control 告诉所有的缓存机制是否可以缓存及哪种类型
+- Connection 是否需要持久化连接
+- Transfer-Encoding 文件传输编码
+
+Request Header
+- Accept 客户能够接收的内容类型，内容类型中的先后次序表示客户端接收的先后次序
+- Range 实体的字节范围请求
+- Authorization web的认证信息
+- Host 请求资源所在的服务器
+- User-Agent 客户端程序信息
+
+Response Header
+- Location 令客户端重定向的url
+- Expires 响应过期的日期和时间
+- Allow 资源可支持http请求的方法，不允许则返回405
+- Content-Type 返回内容的媒体类型 Content-Type:text/html;charset=utf-8
+
+## options
+除了get和post之外的其中一种http请求方法
+
+
+主要用途
+获取服务器支持的所有HTTP请求方法
+用来检查访问权限。例如：JS 的 XMLHttpRequest对象进行 CORS 跨域资源共享时，对于复杂请求，就是使用 OPTIONS 方法发送嗅探请求，以判断是否有对指定资源的访问权限。
+
+
+## 状态码
+1xx Informational(信息性状态码)接收的请求正在处理
+2xx Success(成功状态码)请求正常处理完毕
+3xx Redirection(重定向状态码)需要进行附加操作以正确处理请求
+4xx Client Error(客户端错误状态码)服务器无法处理请求
+5xx Server Error(服务器错误状态码)服务器处理请求出错
+
+## http缓存策略
