@@ -1,5 +1,6 @@
 ## 盒子模型
 内容 + 内边距 + 边框 + 外边距
+
 - 标准盒子模型：margin + border + padding + width，即width = content
 - IE盒子模型：margin + width（border + padding + content） ，即 width = border + padding + content
 
