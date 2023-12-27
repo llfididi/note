@@ -247,7 +247,6 @@ export default {
 
 Scoped Styles 是将样式限制在单个组件的作用域中，以确保样式不会被其他组件影响
 
-
 ```html
 <!-- scoped特性 -->
 <style>
@@ -298,28 +297,255 @@ Scoped Styles 是将样式限制在单个组件的作用域中，以确保样式
 </style>
 ```
 
-- 使用全局样式（以在 <style> 标签外部或使用 @import 引入全局样式文件，这样样式将不受作用域限制。）
+- 使用全局样式（以在 `<style>` 标签外部或使用 @import 引入全局样式文件，这样样式将不受作用域限制。）
 
-- 使用类名继承（在子组件的 <style> 标签中使用 @extend 来继承父组件或其他组件的样式，这样可以打破作用域限制。）
+- 使用类名继承（在子组件的 `<style>` 标签中使用 @extend 来继承父组件或其他组件的样式，这样可以打破作用域限制。）
 
 ### 实现样式隔离
+
 - scoped
 
 - css modules
 
 - css-in-js
 
-## template模板 => render函数
-- 解析模板（Vue会解析模板字符串，将其转化为抽象语法树（AST）。AST是一个表示模板结构和内容的树状数据结构。）
-- 优化AST（Vue会对AST进行优化处理，以提升渲染性能。这包括标记静态节点、静态属性和静态文本等。）
-- 生成渲染函数（利用优化后的AST，Vue会生成渲染函数。渲染函数是一个JavaScript函数，它接收一个上下文对象作为参数，并返回一个虚拟DOM树（VNode））
-- 渲染虚拟DOM（当执行渲染函数时，它将生成一个新的虚拟DOM树。如果之前已经存在真实的DOM树，Vue将通过比较新旧VNode来计算最小的更新操作并应用在真实DOM上，从而进行局部更新，提高效率）
-- 生成DOM（Vue将根据最新的VNode生成真实的DOM元素，并将其插入到页面中，完成渲染）
+## template 模板 => render 函数
 
-1. Vue的编译过程通常在构建时（比如使用Vue CLI）或运行时的初始阶段完成，以便在实际渲染组件时获得更好的性能。这样一来，渲染函数会被缓存并重复使用，而不需要每次重新编译模板。
+- 解析模板（Vue 会解析模板字符串，将其转化为抽象语法树（AST）。AST 是一个表示模板结构和内容的树状数据结构。）
+- 优化 AST（Vue 会对 AST 进行优化处理，以提升渲染性能。这包括标记静态节点、静态属性和静态文本等。）
+- 生成渲染函数（利用优化后的 AST，Vue 会生成渲染函数。渲染函数是一个 JavaScript 函数，它接收一个上下文对象作为参数，并返回一个虚拟 DOM 树（VNode））
+- 渲染虚拟 DOM（当执行渲染函数时，它将生成一个新的虚拟 DOM 树。如果之前已经存在真实的 DOM 树，Vue 将通过比较新旧 VNode 来计算最小的更新操作并应用在真实 DOM 上，从而进行局部更新，提高效率）
+- 生成 DOM（Vue 将根据最新的 VNode 生成真实的 DOM 元素，并将其插入到页面中，完成渲染）
 
-2. Vue还可以使用render函数直接编写组件而不依赖于模板。这种情况下，手动编写的render函数会跳过模板解析和优化的步骤，直接生成渲染函数并进行渲染。这种方式可以在需要更高级别的动态和灵活性时使用。
+1. Vue 的编译过程通常在构建时（比如使用 Vue CLI）或运行时的初始阶段完成，以便在实际渲染组件时获得更好的性能。这样一来，渲染函数会被缓存并重复使用，而不需要每次重新编译模板。
+
+2. Vue 还可以使用 render 函数直接编写组件而不依赖于模板。这种情况下，手动编写的 render 函数会跳过模板解析和优化的步骤，直接生成渲染函数并进行渲染。这种方式可以在需要更高级别的动态和灵活性时使用。
+
+## 实现 v-model
+
+### 基本的 v-model
+
+```js
+// 父组件
+<template>
+  <modelComp v-model="test"></modelComp>
+</template>
+
+<script setup>
+import { ref, watch } from "vue";
+import modelComp from "./components/model/modelComp.vue";
+const test = ref("");
+</script>
+
+// modelComp.vue
+<template>
+  <input
+    type="text"
+    @input="emit('update:modelValue', $event.target.value)"
+    :value="props.modelValue"
+  />
+</template>
+
+<script setup>
+const emit = defineEmits();
+const props = defineProps({
+  modelValue: String,
+});
+</script>
+
+```
+
+### 多个 v-model 绑定
+
+```html
+<!-- 父组件 -->
+<modelComp
+  v-model="test"
+  v-model:test1="test1"
+  v-model:test2="test2"
+></modelComp>
+
+<script setup>
+  import { ref, watch } from "vue";
+  import modelComp from "./components/model/modelComp.vue";
+  const test = ref("");
+  const test1 = ref("");
+  const test2 = ref("");
+</script>
+
+<!-- modelComp.vue -->
+<template>
+    <input
+    type="text"
+    @input="emit('update:modelValue', $event.target.value)"
+    :value="props.modelValue"
+  />
+    <input
+    type="text"
+    @input="emit('update:test1', $event.target.value)"
+    :value="props.test1"
+  />
+    <input
+    type="text"
+    @input="emit('update:test2', $event.target.value)"
+    :value="props.test2"
+  />
+</template>
+
+<script setup>
+  const emit = defineEmits([
+    "update:modelValue",
+    "update:test1",
+    "update:test2",
+  ]);
+  const props = defineProps({
+    modelValue: String,
+    test1: String,
+    test2: String,
+  });
+</script>
+```
+
+### v-model 修饰符
+
+```html
+<!-- 自vue提供的修饰符 -->
+<modelComp
+  v-model.trim="test"
+  v-model:test1.lazy="test1"
+  v-model:test2.trim.lazy="test2"
+></modelComp>
+<!-- 自定义的修饰符 -->
+<modelComp v-model.a="test" v-model:test1.b.c="test1"></modelComp>
+
+<!-- 子组件 -->
+<template>
+    <input type="text" @input="vModelInput" :value="props.modelValue" />
+    <input type="text" @input="vModelTest1" :value="props.test1" />
+</template>
+
+<script setup>
+  const emit = defineEmits(["update:modelValue", "update:test1"]);
+  const props = defineProps({
+    modelValue: String, //接受v-model的修饰符
+    modelModifiers: {
+      default: () => ({}),
+    },
+    test1: String, //接受v-model:test1的修饰符
+    test1Modifiers: {
+      default: () => ({}),
+    },
+  });
+
+  const vModelInput = (e) => {
+    let value = e.target.value;
+    console.log(props.modelModifiers); //{a:true}
+    if (props.modelModifiers.a) {
+      //处理value值
+    }
+    emit("update:modelValue", value);
+  };
+
+  const vModelTest1 = (e) => {
+    let value = e.target.value;
+    console.log(props.test1Modifiers); //{b:true,c:true}
+    if (props.modelModifiers.b) {
+      //处理value值
+    }
+    if (props.modelModifiers.c) {
+      //处理value值
+    }
+    emit("update:test1", value);
+  };
+</script>
+```
+
+### v-model 的子组件直接使用 v-model
+
+#### 在子组件中使用 v-model 报错的示例
+
+```html
+<!-- 子组件 -->
+<input type="text" v-model="xxx" />
+<!-- 子组件 这样会报错 -->
+<input type="text" v-model="props.modelValue" />
+```
+
+#### 通过 watch 中转
+
+```html
+<!-- 子组件 -->
+<template>   <input type="text" v-model="proxy" /> </template>
+
+<script setup>
+  import { ref, watch } from "vue";
+  const emit = defineEmits();
+  const props = defineProps({
+    modelValue: String,
+  });
+
+  const proxy = ref(props.modelValue);
+
+  watch(
+    () => proxy.value,
+    (v) => emit("update:modelValue", v)
+  );
+</script>
+```
+
+#### computed 的 get set
+
+```js
+const proxy = computed({
+  get() {
+    return props.modelValue;
+  },
+  set(v) {
+    emit("update:modelValue", v);
+  },
+});
+```
+
+#### 对 watch 做最后的封装
+
+```html
+<!--childModel.vue -->
+<template>
+    <input type="text" v-model="modelValue" />   <input
+    type="text"
+    v-model="test"
+  />
+</template>
+
+<script setup>
+  import { useVmodel } from "./hooks/useVmodel2";
+  const emit = defineEmits();
+  const props = defineProps({
+    modelValue: String,
+    test: String,
+  });
+  const modelValue = useVmodel(props);
+  const test = useVmodel(props, "test");
+</script>
+
+<!-- 父组件 -->
+<template>   <Model v-model="modelValue" v-model:test="test" /> </template> 
+
+<script setup>
+  import { ref, watch } from "vue";
+  import Model from "./childModel.vue";
+
+  const modelValue = ref("");
+  const test = ref("");
+</script>
+```
+
+## 双向绑定
 
 
-## 实现v-model
+
+
+
+
+
 
