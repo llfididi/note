@@ -243,6 +243,83 @@ export default {
 };
 ```
 
+### attrs 和 listeners??
+
+### ref
+
+```html
+<!-- vue2 -->
+<template>
+  <!-- 子组件 -->
+  <TestComponent ref="TestComponent"></TestComponent>
+</template>
+
+<script>
+  // 导入子组件
+  import TestComponent from "./TestComponent";
+  export default {
+    components: {
+      TestComponent,
+    },
+    mounted() {
+      // 调用子组件方法
+      this.$refs.TestComponent.show();
+    },
+  };
+</script>
+
+<!-- vue3 -->
+<template>
+  <!-- 子组件 -->
+  <TestComponent ref="RefTestComponent"></TestComponent>
+</template>
+
+<script>
+  // 导入子组件
+  import TestComponent from "./TestComponent";
+  import { ref } from "vue";
+  import { nextTick } from "process";
+  export default {
+    components: {
+      TestComponent,
+    },
+    setup() {
+      // 定义一个对象关联上子组件的 ref 值（注意：这里的属性名必须跟子组件定义的 ref 值一模一样，否者会关联失效）
+      const RefTestComponent = ref(null);
+      // 延迟使用，因为还没有返回跟挂载
+      nextTick(() => {
+        RefTestComponent.value.show();
+      });
+      // 返回
+      return {
+        RefTestComponent,
+      };
+    },
+  };
+</script>
+
+<!-- vue3 setup -->
+<template>
+  <!-- 子组件 -->
+  <TestComponent ref="RefTestComponent"></TestComponent>
+</template>
+
+<script setup>
+  // 导入子组件
+  import TestComponent from "./TestComponent";
+  import { ref } from "vue";
+  import { nextTick } from "process";
+
+  // 定义一个对象关联上子组件的 ref 值（注意：这里的属性名必须跟子组件定义的 ref 值一模一样，否者会关联失效）
+  const RefTestComponent = ref(null);
+  // 延迟使用，因为还没挂载
+  nextTick(() => {
+    RefTestComponent.value.show();
+  });
+</script>
+```
+
+
 ## 破开 scope 对样式隔离的限制
 
 Scoped Styles 是将样式限制在单个组件的作用域中，以确保样式不会被其他组件影响
@@ -543,10 +620,11 @@ const proxy = computed({
 ## 双向绑定 MVVM
 
 - 数据层（Model）：应用的数据及业务逻辑
-- 视图层（View）：应用的展示效果，各类UI组件
+- 视图层（View）：应用的展示效果，各类 UI 组件
 - 业务逻辑层（ViewModel）：框架封装的核心，它负责将数据与视图关联起来
 
 ### ViewModel
+
 - 数据变化后更新视图
 - 视图变化后更新数据
 
@@ -556,15 +634,64 @@ const proxy = computed({
 - 解析器（Compiler）：对每个元素节点的指令进行扫描跟解析,根据指令模板替换数据,以及绑定相应的更新函数
 
 ## Vuex
-- State（状态）：应用程序的数据存储在一个单一的状态树中，即state。这个状态树是响应式的，当状态发生变化时，相关的组件将自动更新。
 
-- Getter（获取器）：getter允许从state中派生出一些衍生的状态，类似于计算属性。可以使用getter来对state进行处理和计算，并将其暴露给组件使用。
+- State（状态）：应用程序的数据存储在一个单一的状态树中，即 state。这个状态树是响应式的，当状态发生变化时，相关的组件将自动更新。
 
-- Mutation（突变）：mutation是用于修改state的唯一途径。它定义了一些操作函数，每个函数都有一个特定的名称（称为type），并且可以在这些函数中改变state的值。mutation必须是同步的，以确保状态变更是可追踪的。
+- Getter（获取器）：getter 允许从 state 中派生出一些衍生的状态，类似于计算属性。可以使用 getter 来对 state 进行处理和计算，并将其暴露给组件使用。
 
-- Action（动作）：action用于处理异步操作和复杂的业务逻辑。类似于mutation，但action可以包含异步操作，可以在action中触发多个mutation，也可以在action中调用其他action。
+- Mutation（突变）：mutation 是用于修改 state 的唯一途径。它定义了一些操作函数，每个函数都有一个特定的名称（称为 type），并且可以在这些函数中改变 state 的值。mutation 必须是同步的，以确保状态变更是可追踪的。
 
-- Module（模块）：为了更好地组织和拆分大型的应用程序，Vuex允许将state、getter、mutation和action划分为模块。每个模块都有自己的state、getter、mutation和action，并且可以被嵌套和组合。
+- Action（动作）：action 用于处理异步操作和复杂的业务逻辑。类似于 mutation，但 action 可以包含异步操作，可以在 action 中触发多个 mutation，也可以在 action 中调用其他 action。
+
+- Module（模块）：为了更好地组织和拆分大型的应用程序，Vuex 允许将 state、getter、mutation 和 action 划分为模块。每个模块都有自己的 state、getter、mutation 和 action，并且可以被嵌套和组合。
+
+## 添加新的响应数据
+
+```js
+
+	data:()=>{
+       	item:{
+            oldProperty:"旧属性"
+        }
+    },
+    methods:{
+        addProperty(){
+            this.items.newProperty = "新属性"  // 为items添加新属性
+            console.log(this.items)  // 输出带有newProperty的items
+        }
+    }
+
+```
+
+- 使用 Vue.set() Vue.set( target, propertyName/index, value )
+
+- 使用 Object.assign()
+
+```js
+this.someObject = Object.assign({},this.someObject,{newProperty1:1,newProperty2:2 ...})
+```
+
+- $forceUpdate 迫使 Vue 实例重新渲染
+
+```js
+import { getCurrentInstance } from "vue";
+const { ctx } = getCurrentInstance();
+ctx.$forceUpdate();
+```
+
+
+## vue3和vue2的区别
+- 响应性 reactivite
+- 运行时 runtime
+- 编辑器 compiler
+
+
+
+
+
+
+
+
 
 
 
