@@ -540,10 +540,31 @@ const proxy = computed({
 </script>
 ```
 
-## 双向绑定
+## 双向绑定 MVVM
 
+- 数据层（Model）：应用的数据及业务逻辑
+- 视图层（View）：应用的展示效果，各类UI组件
+- 业务逻辑层（ViewModel）：框架封装的核心，它负责将数据与视图关联起来
 
+### ViewModel
+- 数据变化后更新视图
+- 视图变化后更新数据
 
+当然，它还有两个主要部分组成
+
+- 监听器（Observer）：对所有数据的属性进行监听
+- 解析器（Compiler）：对每个元素节点的指令进行扫描跟解析,根据指令模板替换数据,以及绑定相应的更新函数
+
+## Vuex
+- State（状态）：应用程序的数据存储在一个单一的状态树中，即state。这个状态树是响应式的，当状态发生变化时，相关的组件将自动更新。
+
+- Getter（获取器）：getter允许从state中派生出一些衍生的状态，类似于计算属性。可以使用getter来对state进行处理和计算，并将其暴露给组件使用。
+
+- Mutation（突变）：mutation是用于修改state的唯一途径。它定义了一些操作函数，每个函数都有一个特定的名称（称为type），并且可以在这些函数中改变state的值。mutation必须是同步的，以确保状态变更是可追踪的。
+
+- Action（动作）：action用于处理异步操作和复杂的业务逻辑。类似于mutation，但action可以包含异步操作，可以在action中触发多个mutation，也可以在action中调用其他action。
+
+- Module（模块）：为了更好地组织和拆分大型的应用程序，Vuex允许将state、getter、mutation和action划分为模块。每个模块都有自己的state、getter、mutation和action，并且可以被嵌套和组合。
 
 
 
