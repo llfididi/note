@@ -795,5 +795,76 @@ func2(){
 - route 只读 包括当前 URL 路径、查询参数、路径参数等信息
 - router Vue Router 的实例对象，包括了许多用于导航控制和路由操作的 API push、replace、go、forward 
 
+## 响应式
+- 简化代码
+- 提高可维护性
+- 增强用户体验（局部更新、异步加载）
+- 支持复杂组件设计
 
+## vue和react的区别
+- 数据启动方式不同（react使用单项数据流 vue双向数据绑定）
+- 模版语法不同（react使用jsx vue2使用模版语法）
+- 性能优化方式不同（react使用虚拟dom vue使用模版编译）
 
+## 单页应用提高加载速度
+- 使用代码分割：将代码拆分成小块并按需加载（懒加载），以避免不必要的网络请求和减少加载时间。
+- 缓存资源：利用浏览器缓存来存储重复使用的文件，例如 CSS 和 JS 文件、图片等。
+- 预加载关键资源：在首次渲染之前，先提前加载关键资源，例如首页所需的 JS、CSS 或数据，以保证关键内容的快速呈现。
+- 使用合适的图片格式：选择合适的图片格式（例如 JPEG、PNG、WebP 等），并根据需要进行压缩以减少文件大小。对于一些小图标，可以使用 iconfont 等字体文件来代替。
+- 启用 Gzip 压缩：使用服务器端的 Gzip 压缩算法对文件进行压缩，以减少传输时间和带宽消耗。
+- 使用 CDN：使用内容分发网络（CDN）来缓存和传递文件，以提高文件的下载速度和可靠性。
+- 优化 API 请求：尽可能地减少 API 调用的数量，并使用缓存和延迟加载等技术来优化 API 请求的效率。
+- 使用服务器端渲染：使用服务器端渲染（SSR）来生成 HTML，以减少客户端渲染所需的时间和资源。但需要注意，SSR 也可能增加了服务器的负担并使网站更复杂。
+
+## v-if v-for
+- 在vue模板编译的时候，会将指令系统转化成可执行的render函数
+
+- 在 Vue2 当中，v-for的优先级更高，而在 Vue3 当中，则是v-if的优先级更高。
+
+## 遇到了404的问题
+- hash 
+
+优点：浏览器兼容性较好，连 IE8 都支持
+缺点：路径在井号 # 的后面，比较丑
+
+- history
+优点：路径比较正规，没有井号 #
+缺点：兼容性不如 hash，且需要服务端支持，否则一刷新页面就404了
+
+## vue的diff算法
+https://fe.ecool.fun/topic/7d27dc57-5d95-4e3f-88a7-eb685b7c21e4?orderBy=updateTime&order=desc&tagId=14
+
+## 模版的编译过程
+https://fe.ecool.fun/topic/418ef81f-96c6-4c4e-b218-df29be84890d?orderBy=updateTime&order=desc&tagId=14
+
+## vue3中设置全局变量
+- config.globalProperties
+```js
+// 之前 (Vue 2.x)
+Vue.prototype.$http = () => {}
+
+// 之后 (Vue 3.x)
+const app = createApp({})
+app.config.globalProperties.$http = () => {}
+```
+
+- Provide / Inject
+vue3新的 provide/inject 功能可以穿透多层组件，实现数据从父组件传递到子组件。
+
+可以将全局变量放在根组件的 provide 中，这样所有的组件都能使用到这个变量。
+
+如果需要变量是响应式的，就需要在 provide 的时候使用 ref 或者 reactive 包装变量。
+
+## vue3 响应式原理
+https://fe.ecool.fun/topic/ea676360-c8f5-4ce4-bc66-5c3e4f7eddb6?orderBy=updateTime&order=desc&tagId=14
+
+## Vue 页面渲染流程
+https://fe.ecool.fun/topic/6201f33e-f962-4cdc-ab01-59d03993fed8?orderBy=updateTime&order=desc&tagId=14
+
+## computed怎么实现的缓存
+https://fe.ecool.fun/topic/ca2af24f-1516-4fd7-b979-e2f1d09ccb20?orderBy=updateTime&order=desc&tagId=14
+
+## vue-loader做了哪些事情
+https://fe.ecool.fun/topic/d32689f1-49ec-4eae-97f4-583fe5362c3b?orderBy=updateTime&order=desc&tagId=14
+
+## keep-alive
