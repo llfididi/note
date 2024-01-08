@@ -752,13 +752,48 @@ const vFocus = {
 - 如果节点具有不同的 key 值，Vue 会将其视为不同的节点，并进行适当的更新、移动或删除操作。
 
 
+- key的作用是为了在diff算法执行时更快的找到对应的节点，提高diff速度，更高效的更新虚拟DOM;
+
+vue和react都是采用diff算法来对比新旧虚拟节点，从而更新节点。在vue的diff函数中，会根据新节点的key去对比旧节点数组中的key，从而找到相应旧节点。如果没找到就认为是一个新增节点。而如果没有key，那么就会采用遍历查找的方式去找到对应的旧节点。一种一个map映射，另一种是遍历查找。相比而言。map映射的速度更快。
+
+
+- 为了在数据变化时强制更新组件，以避免“就地复用”带来的副作用。
+
+当 Vue.js 用 v-for 更新已渲染过的元素列表时，它默认用“就地复用”策略。如果数据项的顺序被改变，Vue 将不会移动 DOM 元素来匹配数据项的顺序，而是简单复用此处每个元素，并且确保它在特定索引下显示已被渲染过的每个元素。重复的key会造成渲染错误。
 
 
 
+## 修饰符
+- 表单修饰符（v-model.lazy v-model.trim v-model.number）
+- 事件修饰符（@click.stop :submit.prevent阻止事件默认行为 @click.self当前元素自生时触发处理函数 @click.once绑定完成后只触发一次 @scroll.passive消极的元素滚动事件 @click.native监听原生dom）
+- 鼠标按键修饰符（@click.left @click.middle）
+- 键盘值修饰符（@keyup.keyCode）
+- v-bind修饰符（:myMessage.sync="bar"进行一个双向绑定）
+
+```
+//父组件
+<comp :myMessage.sync="bar"></comp> 
+//子组件
+this.$emit('update:myMessage',params);
 
 
+相当于下面的写法
+//父亲组件
+<comp :myMessage="bar" @update:myMessage="func"></comp>
+func(e){
+ this.bar = e;
+}
+//子组件js
+func2(){
+  this.$emit('update:myMessage',params);
+}
 
+```
 
+## $route & $router
+
+- route 只读 包括当前 URL 路径、查询参数、路径参数等信息
+- router Vue Router 的实例对象，包括了许多用于导航控制和路由操作的 API push、replace、go、forward 
 
 
 
