@@ -319,7 +319,6 @@ export default {
 </script>
 ```
 
-
 ## 破开 scope 对样式隔离的限制
 
 Scoped Styles 是将样式限制在单个组件的作用域中，以确保样式不会被其他组件影响
@@ -679,29 +678,29 @@ const { ctx } = getCurrentInstance();
 ctx.$forceUpdate();
 ```
 
+## vue3 和 vue2 的区别
 
-## vue3和vue2的区别
+- 保持与 vue2 的向后兼容性
 
-- 保持与vue2的向后兼容性
+- 引入 compositionAPI（组合式 api）作为管理组件状态和逻辑。（vue2 是 Options API 选项式 api）
 
-- 引入compositionAPI（组合式api）作为管理组件状态和逻辑。（vue2是Options API选项式api）
-
-- 响应性 reactivite（引入了compositionAPI，提供更灵活和强大的组件状态和逻辑管理方式，使代码组织和重用更加方便，compositionAPI使用函数而不是对象，可以提高摇树优化Tree Shaking并减小打包体积）
+- 响应性 reactivite（引入了 compositionAPI，提供更灵活和强大的组件状态和逻辑管理方式，使代码组织和重用更加方便，compositionAPI 使用函数而不是对象，可以提高摇树优化 Tree Shaking 并减小打包体积）
 
 - 更小的包体积（Vue 3 通过更好的 Tree Shaking 和更高效的运行时代码生成，相较于 Vue 2，打包体积更小。Vue 3 的响应式系统也经过优化，性能更好。）
 
 - 性能改进 （Vue 3 采用了更快、更高效的渲染机制，得益于新的编译器。虚拟 DOM 的差异化算法经过优化，减少不必要的更新，提升渲染性能。）
 
-- 引入Teleport后，在组件任何位置渲染内容，并将其挂载到dom中的其他位置。
+- 引入 Teleport 后，在组件任何位置渲染内容，并将其挂载到 dom 中的其他位置。
 
-- 更好的支持ts
+- 更好的支持 ts
 
 ### Teleport
-``` html
+
+```html
 <template>
   <div>
     <!-- 其他组件内容 -->
-    
+
     <teleport to="body">
       <!-- 弹出框内容 -->
     </teleport>
@@ -710,16 +709,19 @@ ctx.$forceUpdate();
 ```
 
 ### Fragments
-作为vue3 的新特性之一，允许一个vue组件可以有多个根节点。创建一个如下的组件，vue3中开箱即用
+
+作为 vue3 的新特性之一，允许一个 vue 组件可以有多个根节点。创建一个如下的组件，vue3 中开箱即用
+
 ```html
 <template>
-	<header>...</header>
-	<main v-bind="$attrs">...</main>
-	<footer>...</footer>
+  <header>...</header>
+  <main v-bind="$attrs">...</main>
+  <footer>...</footer>
 </template>
 ```
 
 ## 自定义指令 Custom Directive
+
 在 `<script setup>` 中，任何以 v 开头的驼峰式命名的变量都可以被用作一个自定义指令。在下面的例子中，vFocus 即可以在模板中以 v-focus 的形式使用。
 
 - 操作 DOM：自定义指令可以用于直接操作 DOM 元素，例如修改元素的样式、属性、事件绑定等。你可以通过在指令的钩子函数中访问和操作 DOM 元素。
@@ -732,12 +734,12 @@ ctx.$forceUpdate();
 
 - 动画和过渡效果：自定义指令可以与 Vue 的过渡系统一起使用，实现自定义的动画和过渡效果。你可以在自定义指令中监听过渡钩子函数，并根据需要操作元素的样式或类名来实现过渡效果。
 
-``` vue
+```vue
 <script setup>
 // 在模板中启用 v-focus
 const vFocus = {
-  mounted: (el) => el.focus()
-}
+  mounted: (el) => el.focus(),
+};
 </script>
 
 <template>
@@ -745,34 +747,31 @@ const vFocus = {
 </template>
 ```
 
-## key的原理
+## key 的原理
 
 - 当 Vue 更新渲染真实 DOM 时，它会对新旧节点进行比较，找出它们之间的差异。
 - 如果两个节点具有相同的 key 值，则 Vue 认为它们是相同的节点，会尝试复用已存在的真实 DOM 节点。
 - 如果节点具有不同的 key 值，Vue 会将其视为不同的节点，并进行适当的更新、移动或删除操作。
 
+- key 的作用是为了在 diff 算法执行时更快的找到对应的节点，提高 diff 速度，更高效的更新虚拟 DOM;
 
-- key的作用是为了在diff算法执行时更快的找到对应的节点，提高diff速度，更高效的更新虚拟DOM;
-
-vue和react都是采用diff算法来对比新旧虚拟节点，从而更新节点。在vue的diff函数中，会根据新节点的key去对比旧节点数组中的key，从而找到相应旧节点。如果没找到就认为是一个新增节点。而如果没有key，那么就会采用遍历查找的方式去找到对应的旧节点。一种一个map映射，另一种是遍历查找。相比而言。map映射的速度更快。
-
+vue 和 react 都是采用 diff 算法来对比新旧虚拟节点，从而更新节点。在 vue 的 diff 函数中，会根据新节点的 key 去对比旧节点数组中的 key，从而找到相应旧节点。如果没找到就认为是一个新增节点。而如果没有 key，那么就会采用遍历查找的方式去找到对应的旧节点。一种一个 map 映射，另一种是遍历查找。相比而言。map 映射的速度更快。
 
 - 为了在数据变化时强制更新组件，以避免“就地复用”带来的副作用。
 
-当 Vue.js 用 v-for 更新已渲染过的元素列表时，它默认用“就地复用”策略。如果数据项的顺序被改变，Vue 将不会移动 DOM 元素来匹配数据项的顺序，而是简单复用此处每个元素，并且确保它在特定索引下显示已被渲染过的每个元素。重复的key会造成渲染错误。
-
-
+当 Vue.js 用  v-for  更新已渲染过的元素列表时，它默认用“就地复用”策略。如果数据项的顺序被改变，Vue 将不会移动 DOM 元素来匹配数据项的顺序，而是简单复用此处每个元素，并且确保它在特定索引下显示已被渲染过的每个元素。重复的 key 会造成渲染错误。
 
 ## 修饰符
+
 - 表单修饰符（v-model.lazy v-model.trim v-model.number）
-- 事件修饰符（@click.stop :submit.prevent阻止事件默认行为 @click.self当前元素自生时触发处理函数 @click.once绑定完成后只触发一次 @scroll.passive消极的元素滚动事件 @click.native监听原生dom）
+- 事件修饰符（@click.stop :submit.prevent 阻止事件默认行为 @click.self 当前元素自生时触发处理函数 @click.once 绑定完成后只触发一次 @scroll.passive 消极的元素滚动事件 @click.native 监听原生 dom）
 - 鼠标按键修饰符（@click.left @click.middle）
 - 键盘值修饰符（@keyup.keyCode）
-- v-bind修饰符（:myMessage.sync="bar"进行一个双向绑定）
+- v-bind 修饰符（:myMessage.sync="bar"进行一个双向绑定）
 
 ```
 //父组件
-<comp :myMessage.sync="bar"></comp> 
+<comp :myMessage.sync="bar"></comp>
 //子组件
 this.$emit('update:myMessage',params);
 
@@ -793,20 +792,23 @@ func2(){
 ## $route & $router
 
 - route 只读 包括当前 URL 路径、查询参数、路径参数等信息
-- router Vue Router 的实例对象，包括了许多用于导航控制和路由操作的 API push、replace、go、forward 
+- router Vue Router 的实例对象，包括了许多用于导航控制和路由操作的 API push、replace、go、forward
 
 ## 响应式
+
 - 简化代码
 - 提高可维护性
 - 增强用户体验（局部更新、异步加载）
 - 支持复杂组件设计
 
-## vue和react的区别
-- 数据启动方式不同（react使用单项数据流 vue双向数据绑定）
-- 模版语法不同（react使用jsx vue2使用模版语法）
-- 性能优化方式不同（react使用虚拟dom vue使用模版编译）
+## vue 和 react 的区别
+
+- 数据启动方式不同（react 使用单项数据流 vue 双向数据绑定）
+- 模版语法不同（react 使用 jsx vue2 使用模版语法）
+- 性能优化方式不同（react 使用虚拟 dom vue 使用模版编译）
 
 ## 单页应用提高加载速度
+
 - 使用代码分割：将代码拆分成小块并按需加载（懒加载），以避免不必要的网络请求和减少加载时间。
 - 缓存资源：利用浏览器缓存来存储重复使用的文件，例如 CSS 和 JS 文件、图片等。
 - 预加载关键资源：在首次渲染之前，先提前加载关键资源，例如首页所需的 JS、CSS 或数据，以保证关键内容的快速呈现。
@@ -817,54 +819,266 @@ func2(){
 - 使用服务器端渲染：使用服务器端渲染（SSR）来生成 HTML，以减少客户端渲染所需的时间和资源。但需要注意，SSR 也可能增加了服务器的负担并使网站更复杂。
 
 ## v-if v-for
-- 在vue模板编译的时候，会将指令系统转化成可执行的render函数
 
-- 在 Vue2 当中，v-for的优先级更高，而在 Vue3 当中，则是v-if的优先级更高。
+- 在 vue 模板编译的时候，会将指令系统转化成可执行的 render 函数
 
-## 遇到了404的问题
-- hash 
+- 在 Vue2 当中，v-for 的优先级更高，而在 Vue3 当中，则是 v-if 的优先级更高。
+
+## 遇到了 404 的问题
+
+- hash
 
 优点：浏览器兼容性较好，连 IE8 都支持
 缺点：路径在井号 # 的后面，比较丑
 
 - history
-优点：路径比较正规，没有井号 #
-缺点：兼容性不如 hash，且需要服务端支持，否则一刷新页面就404了
+  优点：路径比较正规，没有井号 #
+  缺点：兼容性不如 hash，且需要服务端支持，否则一刷新页面就 404 了
 
-## vue的diff算法
+## vue 的 diff 算法
+
 https://fe.ecool.fun/topic/7d27dc57-5d95-4e3f-88a7-eb685b7c21e4?orderBy=updateTime&order=desc&tagId=14
 
 ## 模版的编译过程
+
 https://fe.ecool.fun/topic/418ef81f-96c6-4c4e-b218-df29be84890d?orderBy=updateTime&order=desc&tagId=14
 
-## vue3中设置全局变量
+## vue3 中设置全局变量
+
 - config.globalProperties
+
 ```js
 // 之前 (Vue 2.x)
-Vue.prototype.$http = () => {}
+Vue.prototype.$http = () => {};
 
 // 之后 (Vue 3.x)
-const app = createApp({})
-app.config.globalProperties.$http = () => {}
+const app = createApp({});
+app.config.globalProperties.$http = () => {};
 ```
 
 - Provide / Inject
-vue3新的 provide/inject 功能可以穿透多层组件，实现数据从父组件传递到子组件。
+  vue3 新的 provide/inject 功能可以穿透多层组件，实现数据从父组件传递到子组件。
 
 可以将全局变量放在根组件的 provide 中，这样所有的组件都能使用到这个变量。
 
 如果需要变量是响应式的，就需要在 provide 的时候使用 ref 或者 reactive 包装变量。
 
 ## vue3 响应式原理
+
 https://fe.ecool.fun/topic/ea676360-c8f5-4ce4-bc66-5c3e4f7eddb6?orderBy=updateTime&order=desc&tagId=14
 
 ## Vue 页面渲染流程
+
 https://fe.ecool.fun/topic/6201f33e-f962-4cdc-ab01-59d03993fed8?orderBy=updateTime&order=desc&tagId=14
 
-## computed怎么实现的缓存
+## computed 怎么实现的缓存
+
 https://fe.ecool.fun/topic/ca2af24f-1516-4fd7-b979-e2f1d09ccb20?orderBy=updateTime&order=desc&tagId=14
 
-## vue-loader做了哪些事情
+## vue-loader 做了哪些事情
+
 https://fe.ecool.fun/topic/d32689f1-49ec-4eae-97f4-583fe5362c3b?orderBy=updateTime&order=desc&tagId=14
 
 ## keep-alive
+
+对组件进行持久化，使组件的状态维持不变。下一次展示时，不会进行重新初始化组件。
+
+保存在内存里，方式重复渲染 dom
+
+- include - 字符串或正则表达式。只有名称匹配的组件会被缓存
+- exclude - 字符串或正则表达式。任何名称匹配的组件都不会被缓存
+- max - 数字。最多可以缓存多少组件实例
+
+```html
+<!-- 指定home组件和about组件被缓存 -->
+<keep-alive include="home,about">
+  <router-view></router-view>
+</keep-alive>
+
+<!-- 除了home组件和about组件别的都缓存，本例中就是只缓存detail组件 -->
+<keep-alive exclude="home,about">
+  <router-view></router-view>
+</keep-alive>
+```
+
+使用了 keep-alive 的组件以后，自动加上了 activated 钩子和 deactivated 钩子
+
+- activated 当组件被激活（使用）的时候触发，可以简单理解为进入这个页面的时候触发
+- deactivated 当组件不被使用（inactive 状态）的时候触发，可以简单理解为离开这个页面的时候触发
+
+初始进入和离开 created ---> mounted ---> activated --> deactivated
+
+后续进入和离开 activated --> deactivated
+
+源码解释 https://fe.ecool.fun/topic/7cefdb7e-8b8a-429f-be44-45b346de6f3f?orderBy=updateTime&order=desc&tagId=14
+
+## vue3 实现 modal 组件
+
+https://fe.ecool.fun/topic/977b3a64-29e7-4085-a05a-26e78bdefcea?orderBy=updateTime&order=desc&tagId=14
+
+## composition api 和 options api
+
+https://fe.ecool.fun/topic/3707a3b3-2330-4833-9c9b-b427887f8ee9?orderBy=updateTime&order=desc&tagId=14
+
+## vue3 性能提升
+
+https://fe.ecool.fun/topic/9f19f171-7071-42e6-82d5-35b19bd83928?orderBy=updateTime&order=desc&tagId=
+
+
+https://fe.ecool.fun/topic/a5032eb9-6a53-4792-852f-3f9417631c47?orderBy=updateTime&order=desc&tagId=14
+
+## Vue3.0 的设计目标是什么？做了哪些优化?
+
+https://fe.ecool.fun/topic/ca63a7ef-8e3d-4fe4-b697-28138bd96f74?orderBy=updateTime&order=desc&tagId=14
+
+## 处理 vue 项目中的错误
+
+https://fe.ecool.fun/topic/0cc5abe2-7798-40a6-b930-7dacdb404b8d?orderBy=updateTime&order=desc&tagId=14
+
+## vue 权限管理
+
+https://fe.ecool.fun/topic/f43b7906-f51f-454f-8028-ea027ae3e121?orderBy=updateTime&order=desc&tagId=14
+
+## Vue 项目划分结构和划分组件
+
+- 文件夹和文件夹内部文件的语义一致性
+- 单一入口/出口
+- 就近原则，紧耦合的文件应该放到一起，且应以相对路径引用
+- 公共的文件应该以绝对路径的方式从根目录引用
+- /src 外的文件不应该被引入
+
+## 封装 axios
+
+封装的同时，你需要和 后端协商好一些约定，请求头，状态码，请求超时时间.......
+
+- 设置接口请求前缀：根据开发、测试、生产环境的不同，前缀需要加以区分
+
+- 请求头 : 来实现一些具体的业务，必须携带一些参数才可以请求(例如：会员业务)
+
+- 状态码: 根据接口返回的不同 status ， 来执行不同的业务，这块需要和后端约定好
+
+- 请求方法：根据 get、post 等方法进行一个再次封装，使用起来更为方便
+
+- 请求拦截器: 根据请求的请求头设定，来决定哪些请求可以访问
+
+- 响应拦截器： 这块就是根据 后端`返回来的状态码判定执行不同业务
+
+## 实现虚拟 dom
+
+https://fe.ecool.fun/topic/d5acd6cf-38c3-4afb-965d-be79f03cd045?orderBy=updateTime&order=desc&tagId=14
+
+## observable
+
+https://fe.ecool.fun/topic/adaa5c02-f04c-4247-b6d6-0fe3f1bd439c?orderBy=updateTime&order=desc&tagId=14
+
+## slot
+
+https://fe.ecool.fun/topic/28305428-953c-4daa-9b4e-f3d01b694017?orderBy=updateTime&order=desc&tagId=14
+
+## mixin
+
+https://fe.ecool.fun/topic/c1bcc1f1-3375-4c66-b3af-1ba1b937c01f?orderBy=updateTime&order=desc&tagId=14
+
+## NextTick
+
+https://fe.ecool.fun/topic/a0c75651-7e44-437d-9f1f-38775698091b?orderBy=updateTime&order=desc&tagId=14
+
+## 插件和组件的区别
+
+- 编写形式
+
+```
+组件
+标准格式
+<template>
+</template>
+<script>
+export default{
+    ...
+}
+</script>
+<style>
+</style>
+
+我们还可以通过template属性来编写一个组件，如果组件内容多，我们可以在外部定义template组件内容，如果组件内容并不多，我们可直接写在template属性上
+<template id="testComponent">     // 组件显示的内容
+    <div>component!</div>
+</template>
+
+Vue.component('componentA',{
+    template: '#testComponent'
+    template: `<div>component</div>`  // 组件内容少可以通过这种形式
+})
+```
+
+```js
+MyPlugin.install = function (Vue, options) {
+  // 1. 添加全局方法或 property
+  Vue.myGlobalMethod = function () {
+    // 逻辑...
+  }
+
+  // 2. 添加全局资源
+  Vue.directive('my-directive', {
+    bind (el, binding, vnode, oldVnode) {
+      // 逻辑...
+    }
+    ...
+  })
+
+  // 3. 注入组件选项
+  Vue.mixin({
+    created: function () {
+      // 逻辑...
+    }
+    ...
+  })
+
+  // 4. 添加实例方法
+  Vue.prototype.$myMethod = function (methodOptions) {
+    // 逻辑...
+  }
+}
+
+```
+
+- 注册形式
+
+```js
+// 组件全局注册
+Vue.component('my-component-name', { /* ... */ })
+
+// 组件局部注册
+const component1 = {...} // 定义一个组件
+
+export default {
+	components:{
+		component1   // 局部注册
+	}
+}
+
+
+// 插件
+Vue.use(插件名字,{ /* ... */} )
+
+
+```
+
+- 使用场景
+
+  - 组件 (Component) 是用来构成你的 App 的业务模块，它的目标是 App.vue
+
+  - 插件 (Plugin) 是用来增强你的技术栈的功能模块，它的目标是 Vue 本身
+
+简单来说，插件就是指对 Vue 的功能的增强或补充
+
+
+## vue 实例挂载
+https://fe.ecool.fun/topic/41132096-4901-45d1-a453-6119931a083e?orderBy=updateTime&order=desc&tagId=14
+
+## 生命周期
+https://fe.ecool.fun/topic/cf1e843f-9005-42dc-b204-194dd3d1fc42?orderBy=updateTime&order=desc&tagId=14
+
+
+## 分析为什么vue中的data属性是一个函数而不是一个对象
+https://fe.ecool.fun/topic/7e8c5dd0-90cc-451b-afdb-0c4150704768?orderBy=updateTime&order=desc&tagId=14
